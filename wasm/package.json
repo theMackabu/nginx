@@ -27,8 +27,12 @@
   ],
   "scripts": {
     "build": "./build.sh",
+    "serve": "serve . -l 8000",
     "test": "node --test --test-force-exit",
     "diff": "node diff/difftest.mjs"
+  },
+  "devDependencies": {
+    "serve": "^14.2.6"
   },
   "keywords": [
     "nginx",
