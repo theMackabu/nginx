@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>nginx-wasm playground</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌀</text></svg>">
+<style>
+  :root { color-scheme: light dark; font: 14px system-ui, sans-serif; }
+  * { box-sizing: border-box; }
+  body { margin: 0; height: 100vh; display: grid; grid-template-rows: auto 1fr; }
+  header, .bar { display: flex; align-items: center; gap: 10px; padding: 10px; border-bottom: 1px solid; }
+  h1 { margin: 0; font-size: 16px; }
+  .sub, .hint, label, summary { color: gray; }
+  #status { margin-left: auto; }
+  #status.ok, .s2 { color: green; }
+  #status.err, .s4, .s5 { color: red; }
+  .s3 { color: dodgerblue; }
+  main { display: grid; grid-template-columns: 1fr 1fr; min-height: 0; }
+  section { display: flex; flex-direction: column; min-height: 0; min-width: 0; }
+  section + section { border-left: 1px solid; }
+  textarea, input, select, button { font: inherit; padding: 6px; }
+  #conf { flex: 1; resize: none; border: 0; padding: 10px; }
+  #url { flex: 1; min-width: 180px; }
+  .results { overflow: auto; padding: 10px; }
+  .card { border: 1px solid; margin-bottom: 10px; }
+  .card > * { margin: 0; padding: 8px; }
+  .card h2 { font-size: 13px; border-bottom: 1px solid; }
+  pre, .kv { font: 12px/1.5 monospace; }
+  pre { white-space: pre-wrap; overflow-wrap: anywhere; }
+  .kv { display: grid; grid-template-columns: max-content 1fr; gap: 2px 10px; }
+  .pill { font-weight: bold; }
+  summary { cursor: pointer; }
+  .hint { padding: 8px; }
+  @media (max-width: 800px) { main { grid-template-columns: 1fr; grid-template-rows: 1fr 1fr; } }
+</style>
+</head>
+<body>
+<header>
+  <h1>nginx-wasm playground</h1>
+  <span class="sub">real nginx, compiled to WebAssembly, running in this tab. Edit the config, fire requests, and watch it route.</span>
+  <span id="status">loading…</span>
+</header>
+<main>
+  <section>
+    <div class="bar">
+      <label>nginx.conf (server-level; proxied upstreams answer with a built-in echo fixture)</label>
+      <button id="apply" style="margin-left:auto">Apply config</button>
+    </div>
+    <textarea id="conf" spellcheck="false"></textarea>
+  </section>
+  <section>
+    <div class="bar">
+      <select id="method"><option>GET</option><option>POST</option><option>PUT</option><option>DELETE</option><option>HEAD</option></select>
+      <input id="url" value="http://api.example.com/v1/users?id=3" spellcheck="false">
+      <button id="send">Send</button>
+    </div>
+    <div class="results" id="results">
+      <div class="hint">Apply the config, then send a request. You'll get the response from real nginx
+        plus its routing decision: matched location, rewrites, upstream choice, and the full debug trace.</div>
+    </div>
+  </section>
+</main>
+<script type="module" src="./app.js"></script>
+</body>
+</html>

@@ -1,0 +1,45 @@
+name: nginx-wasm
+
+on:
+  push:
+    paths:
+      - 'wasm/**'
+      - 'src/**'
+      - 'auto/**'
+      - '.github/workflows/nginx-wasm.yml'
+  pull_request:
+    paths:
+      - 'wasm/**'
+
+jobs:
+  build-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: mymindstorm/setup-emsdk@v14
+        with:
+          version: 4.0.10
+          actions-cache-folder: emsdk-cache
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Install meson + ninja
+        run: pipx install meson && sudo apt-get install -y ninja-build
+
+      - name: Build nginx-wasm (meson, emscripten cross)
+        run: ./wasm/build.sh
+
+      - name: Test
+        working-directory: wasm
+        run: npm test
+
+      - name: Differential test vs native nginx (meson native build)
+        working-directory: wasm
+        run: npm run diff
+
+      - name: Pack (publish dry-run)
+        working-directory: wasm
+        run: npm publish --dry-run
