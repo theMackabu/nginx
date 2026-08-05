@@ -1,0 +1,6 @@
+dist/
+vendor/
+build-wasm/
+build-native/
+subprojects/*
+!subprojects/*.wrap

@@ -1,0 +1,51 @@
+{
+  "name": "nginx-wasm",
+  "version": "0.2.0",
+  "description": "nginx compiled to wasm",
+  "type": "module",
+  "main": "js/index.js",
+  "types": "index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./index.d.ts",
+      "default": "./js/index.js"
+    },
+    "./testing": {
+      "types": "./testing.d.ts",
+      "default": "./js/testing.js"
+    },
+    "./compose": {
+      "types": "./compose.d.ts",
+      "default": "./js/compose.js"
+    }
+  },
+  "files": [
+    "js/",
+    "dist/",
+    "index.d.ts",
+    "testing.d.ts"
+  ],
+  "scripts": {
+    "build": "./build.sh",
+    "test": "node --test --test-force-exit",
+    "diff": "node diff/difftest.mjs"
+  },
+  "keywords": [
+    "nginx",
+    "wasm",
+    "webassembly",
+    "reverse-proxy",
+    "config",
+    "testing",
+    "emscripten"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/theMackabu/nginx.git",
+    "directory": "wasm"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "license": "BSD-2-Clause"
+}

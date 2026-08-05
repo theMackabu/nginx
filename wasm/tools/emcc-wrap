@@ -1,0 +1,45 @@
+#!/bin/bash
+
+EMCC="${EMCC:-emcc}"
+NODE_BIN="${NODE_BIN:-node}"
+
+argv=("$@")
+n=${
+link=1
+out=""
+outidx=-1
+
+i=0
+while [ $i -lt $n ]; do
+    a="${argv[$i]}"
+    case "$a" in
+        -c|-E|-S|-M|-MM) link=0 ;;
+        -o)
+            outidx=$((i + 1))
+            out="${argv[$outidx]}"
+            ;;
+    esac
+    i=$((i + 1))
+done
+
+case "$out" in
+    ""|*.o|*.js|*.mjs|*.wasm) link=0 ;;
+esac
+
+if [ $link -eq 0 ]; then
+    exec "$EMCC" "$@"
+fi
+
+extra=()
+case "$(basename "$out")" in
+    autotest*) extra=(-sEXIT_RUNTIME=1) ;;
+    *) extra=(-sERROR_ON_UNDEFINED_SYMBOLS=0 -sALLOW_MEMORY_GROWTH=1) ;;
+esac
+
+argv[$outidx]="$out.js"
+"$EMCC" "${argv[@]}" "${extra[@]}" || exit $?
+
+outdir=$(cd "$(dirname "$out")" && pwd)
+outabs="$outdir/$(basename "$out")"
+printf '#!/bin/sh\nexec "%s" "%s.js" "$@"\n' "$NODE_BIN" "$outabs" > "$out"
+chmod +x "$out"
